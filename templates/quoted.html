@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quote
+{% endblock %}
+
+{% block main %}
+    <h1>
+      {{ response["name"] }}
+    </h1>
+    <h2>
+      Current Price: {{ response["price"] | usd }}
+    </h2>
+{% endblock %}
+
+
+
