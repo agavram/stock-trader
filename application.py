@@ -64,7 +64,8 @@ def buy():
     if request.method == "POST":
         if not request.form.get("symbol"):
             return apology("Must enter a symbol")
-        r = lookup(request.form.get("symbol"))
+        symbol = request.form.get("symbol").lower()
+        r = lookup(symbol)
         if not r:
             return apology("Must enter a proper symbol")
         if not request.form.get("shares"):
@@ -78,12 +79,12 @@ def buy():
         if (price > balance):
             return apology("Not enough money to purchase shares")
         db.execute("UPDATE users SET cash = :cash WHERE id = :uid", cash=(balance - price), uid=user_id)
-        currShares = db.execute("SELECT shares FROM stocks WHERE user_id = :uid AND symbol = :symbol", uid=user_id, symbol=request.form.get("symbol"))
+        currShares = db.execute("SELECT shares FROM stocks WHERE user_id = :uid AND symbol = :symbol", uid=user_id, symbol=symbol)
         if (currShares):
             currShares = int(currShares[0]["shares"])
-            db.execute("UPDATE stocks SET shares = :shares WHERE user_id = :uid AND symbol = :symbol", shares=currShares + int(request.form.get("shares")), uid=user_id, symbol=request.form.get("symbol"))
+            db.execute("UPDATE stocks SET shares = :shares WHERE user_id = :uid AND symbol = :symbol", shares=currShares + int(request.form.get("shares")), uid=user_id, symbol=symbol)
         else:
-            db.execute("INSERT INTO stocks(user_id, symbol, shares) VALUES(:user_id, :symbol, :shares)", user_id=user_id, symbol=request.form.get("symbol"), shares=int(request.form.get("shares")))
+            db.execute("INSERT INTO stocks(user_id, symbol, shares) VALUES(:user_id, :symbol, :shares)", user_id=user_id, symbol=symbol, shares=int(request.form.get("shares")))
         return redirect("/")
     else:
         balance = db.execute("SELECT cash FROM users WHERE id = :uid", uid=session["user_id"])[0]["cash"]
